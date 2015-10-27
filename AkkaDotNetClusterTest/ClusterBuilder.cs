@@ -38,11 +38,21 @@ namespace AkkaDotNetClusterTest
 			Props shouterProps = Props.Create(
 				() => new Shouter(nodeId)
 			);
-            clusterNode.ActorOf(shouterProps, name: $"shouter{nodeId}");
-			clusterNode.ActorOf(shouterProps, name: $"shouter{nodeId + 1}");
+            clusterNode.ActorOf(
+				Props.Create(() =>
+					new Shouter(nodeId)
+				),
+				name: $"shouter{nodeId}"
+			);
+			clusterNode.ActorOf(
+				Props.Create(() =>
+					new Shouter(nodeId + 1)
+				),
+				name: $"shouter{nodeId + 1}"
+			);
 
 			// Clustered broadcast router (BrokenRecord -> Shouter).
-			clusterNode.ActorOf(
+			IActorRef broadcaster = clusterNode.ActorOf(
 				Props.Empty.WithRouter(FromConfig.Instance),
 				name: "broadcaster"
 			);
